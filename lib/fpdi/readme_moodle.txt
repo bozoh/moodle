@@ -16,8 +16,17 @@ Installation
 ------------
 1) Download the latest version of fpdi from the url above.
 2) Unzip the files into this directory.
-3) Update mod/assign/feedback/editpdf/fpdi/fpdi_bridge.php (or the replacement file) to extend 'pdf' instead of 'TCPDF'.
+3) Update lib/fpdi/fpdi_bridge.php (or the replacement file) to extend 'pdf' instead of 'TCPDF'.
 4) Make a note below of any changes made.
+
+
+2017/12/06
+----------
+
+1) move fdpi lib from  mod/assign/feedback/editpdf/fdpi to lib/fdpi
+2) update readme_moodle.txt
+
+Updated by Carlos Alexandre S. da Fonseca<carlos.alexandre@outlook.com>
 
 2016/11/15
 ----------
