@@ -1,0 +1,8 @@
+{
+    "phpcs.standard": "local/codechecker/moodle",
+    "phpcs.ignorePatterns": [
+        "lib/*",
+        "tests/*",
+        "pix/*"
+    ],
+}
