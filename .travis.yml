@@ -7,8 +7,9 @@ sudo: required
 # We currently disable Travis notifications entirely until https://github.com/travis-ci/travis-ci/issues/4976
 # is fixed.
 notifications:
-  on_success: change #never # default: change
-  on_failure: always # default: always
+  email:
+    on_success: change #never # default: change
+    on_failure: always # default: always
 
 language: php
 
@@ -28,6 +29,8 @@ addons:
 # Redis tests are currently failing on php 7.2 due to https://bugs.php.net/bug.php?id=75628
 # services:
 #     - redis-server
+services:
+    - docker
 
 env:
     # Although we want to run these jobs and see failures as quickly as possible, we also want to get the slowest job to
@@ -38,7 +41,13 @@ env:
     # Postgres is significantly is pretty reasonable in its run-time.
 
     # Run unit tests on Postgres
-    - DB=pgsql    TASK=BEHAT   PLUGIN_VER=MOODLE_35
+    - DB=pgsql    TASK=PHPUNIT
+    
+    # Run unit tests on Postgres
+    - DB=pgsql    TASK=BEHAT   MOODLE_VER=MOODLE_35_STABLE PLUGIN_VER=MOODLE_34
+
+    # Perform an upgrade test too.
+    - DB=pgsql    TASK=UPGRADE
 
 matrix:
     # Enable fast finish.
@@ -113,6 +122,15 @@ install:
           docker load -i $HOME/.docker/cache/image.tar
         fi      
     - >
+        if [ "$TASK" = 'BEHAT' ];
+        then
+            if [ ! -e "$HOME/.docker/cache/image.tar" ]; then
+                docker pull selenium/standalone-firefox:2.53.1-beryllium;
+                docker save selenium/standalone-firefox:2.53.1-beryllium -o $HOME/.docker/cache/image.tar;
+            fi
+            docker load -i $HOME/.docker/cache/image.tar
+        fi
+    - >
         if [ "$TASK" = 'GRUNT' ];
         then
             nvm install $NVM_VERSION ;
@@ -186,6 +204,49 @@ before_script:
         # Initialise PHPUnit for Moodle.
         php admin/tool/phpunit/cli/init.php
       fi
+      
+    - >
+      if [ "$TASK" = 'BEHAT' ];
+      then
+        #Change php.ini to avoid error on php 5.6
+        echo 'always_populate_raw_post_data="-1"' > /tmp/travis-php.ini
+        phpenv config-add /tmp/travis-php.ini
+        #Add simplecertificate
+        git clone -b $PLUGIN_VER --single-branch https://github.com/bozoh/moodle-mod_simplecertificate.git mod/simplecertificate
+        
+        # Create a directory for the phpunit dataroot.
+        mkdir -p "$HOME"/roots/behat
+
+        # The behat dataroot and prefix..
+        sed -i \
+          -e "/require_once/i \\\$CFG->behat_dataroot = '\/home\/travis\/roots\/behat';" \
+          -e "/require_once/i \\\$CFG->behat_prefix = 'behat_';" \
+          -e "/require_once/i \\\$CFG->behat_wwwroot='http://smpl-cert.dev:8000';"\
+          -e "/require_once/i \\\$CFG->behat_debug = (E_ALL | E_STRICT);"\
+          -e "/require_once/i \\\$CFG->behat_debugdisplay = 1;"\
+          -e "/require_once/i \\\$CFG->behat_yuiloglevel = 'debug';"\
+          -e "/require_once/i \\\$CFG->behat_langstringcache = false;"\
+          -e "/require_once/i \\\$CFG->behat_noemailever = true;"\
+          -e "/require_once/i \\\$CFG->behat_showcrondebugging = true;"\
+          -e "/require_once/i \\\$CFG->behat_themedesignermode = true;"\
+          -e "/require_once/i \\\$CFG->behat_cachejs = false;"\
+          -e "/require_once/i \\\$CFG->behat_enablecompletion = true;"\
+          -e "/require_once/i \\\$CFG->behat_enableavailability = true;"\
+          -e "/require_once/i \\\$CFG->behat_moodlecourse_enablecompletion = true;"\
+          config.php ;
+
+        #Start php build in http server
+        cd $TRAVIS_BUILD_DIR
+        php -S smpl-cert.dev:8000 &> /dev/null &
+        # Initialise Behat for Moodle.        
+        php admin/tool/behat/cli/init.php
+        curl -s http://smpl-cert.dev:8000 &> /dev/null
+        #Enable docker with mozilla.
+        docker run --net=host -d -p4444:4444 selenium/standalone-firefox:2.53.1-beryllium
+        sleep 5
+        php admin/tool/behat/cli/util.php --enable
+        
+      fi
 
     - >
       if [ "$TASK" = 'BEHAT' ];
@@ -256,7 +317,7 @@ before_script:
         # We need the official upstream for comparison
         git remote add upstream https://github.com/moodle/moodle.git;
 
-        git fetch upstream MOODLE_35_STABLE;
+        git fetch upstream MOODLE_34_STABLE;
         export GIT_PREVIOUS_COMMIT="`git merge-base FETCH_HEAD $TRAVIS_COMMIT`";
         export GIT_COMMIT="$TRAVIS_COMMIT";
         export UPSTREAM_FETCH_HEAD=`git rev-parse FETCH_HEAD`
@@ -297,7 +358,7 @@ script:
     - >
       if [ "$TASK" = 'BEHAT' ];
       then
-        vendor/bin/behat --config /home/travis/roots/behat/behatrun/behat/behat.yml --tags="@mod_simplecertificate, @block_simple_certificate"
+        vendor/bin/behat --config /home/travis/roots/behat/behatrun/behat/behat.yml --tags @mod_simplecertificate
       fi
 
     - >
