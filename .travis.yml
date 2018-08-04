@@ -54,7 +54,7 @@ env:
     - DB=pgsql    TASK=BEHAT   MOODLE_VER=MOODLE_34
 
     # Perform an upgrade test too.
-    - DB=pgsql    TASK=UPGRADE
+    - DB=pgsql    TASK=UPGRADE 
 
 matrix:
     # Enable fast finish.
