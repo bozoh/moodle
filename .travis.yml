@@ -15,7 +15,7 @@ language: php
 
 php:
     # We only run the highest and lowest supported versions to reduce the load on travis-ci.org.
-    - 7.1
+    - 7.2
     - 5.6
 
 addons:
