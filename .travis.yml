@@ -194,7 +194,7 @@ before_script:
         echo 'always_populate_raw_post_data="-1"' > /tmp/travis-php.ini
         phpenv config-add /tmp/travis-php.ini
         #Add simplecertificate
-        git clone -b $MOODLE_VER --single-branch https://github.com/bozoh/moodle-mod_simplecertificate.git mod/simplecertificate
+        git clone -b $PLUGIN_VER --single-branch https://github.com/bozoh/moodle-mod_simplecertificate.git mod/simplecertificate
         
         # Create a directory for the phpunit dataroot.
         mkdir -p "$HOME"/roots/behat
