@@ -297,7 +297,7 @@ script:
     - >
       if [ "$TASK" = 'BEHAT' ];
       then
-        vendor/bin/behat --config /home/travis/roots/behat/behatrun/behat/behat.yml --tags @mod_simplecertificate @block_simple_cetificate
+        vendor/bin/behat --config /home/travis/roots/behat/behatrun/behat/behat.yml --tags="@mod_simplecertificate, @block_simple_certificate"
       fi
 
     - >
