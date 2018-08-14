@@ -195,6 +195,8 @@ before_script:
         phpenv config-add /tmp/travis-php.ini
         #Add simplecertificate
         git clone -b $PLUGIN_VER --single-branch https://github.com/bozoh/moodle-mod_simplecertificate.git mod/simplecertificate
+        #Add block simplecertificate
+        git clone -b master --single-branch https://github.com/bozoh/moodle-block_simple_certificate.git block/simple_certificate
         
         # Create a directory for the phpunit dataroot.
         mkdir -p "$HOME"/roots/behat
@@ -215,6 +217,7 @@ before_script:
           -e "/require_once/i \\\$CFG->behat_enablecompletion = true;"\
           -e "/require_once/i \\\$CFG->behat_enableavailability = true;"\
           -e "/require_once/i \\\$CFG->behat_moodlecourse_enablecompletion = true;"\
+          -e "/require_once/i \\\$CFG->behat_profiles = array('chrome' => array('browser' => 'chrome', 'tags' => '@javascript',));"\
           config.php ;
 
         #Start php build in http server
@@ -340,7 +343,7 @@ script:
     - >
       if [ "$TASK" = 'BEHAT' ];
       then
-        vendor/bin/behat --config /home/travis/roots/behat/behatrun/behat/behat.yml --tags @mod_simplecertificate
+        vendor/bin/behat --config /home/travis/roots/behat/behatrun/behat/behat.yml --tags @mod_simplecertificate @block_simple_cetificate
       fi
 
     - >
