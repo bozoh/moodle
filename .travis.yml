@@ -15,6 +15,7 @@ language: php
 php:
     # We only run the highest and lowest supported versions to reduce the load on travis-ci.org.
     - 7.2
+    - 7.1
     - 7.0
 
 addons:
@@ -47,15 +48,15 @@ matrix:
 
     include:
           # Run grunt/npm install on highest version ('node' is an alias for the latest node.js version.)
-        - php: 7.2
-          env: DB=none     TASK=GRUNT   NVM_VERSION='lts/carbon'
+        # - php: 7.2
+        #   env: DB=none     TASK=GRUNT   NVM_VERSION='lts/carbon'
 
     exclude:
         # MySQL - it's just too slow.
         # Exclude it on all versions except for 7.2
 
-        - env: DB=mysqli   TASK=PHPUNIT
-          php: 7.0
+        # - env: DB=mysqli   TASK=PHPUNIT
+        #   php: 7.0
 
 cache:
     directories:
@@ -194,6 +195,8 @@ before_script:
         phpenv config-add /tmp/travis-php.ini
         #Add simplecertificate
         git clone -b $PLUGIN_VER --single-branch https://github.com/bozoh/moodle-mod_simplecertificate.git mod/simplecertificate
+        #Add block simplecertificate
+        git clone -b master --single-branch https://github.com/bozoh/moodle-block_simple_certificate.git block/simple_certificate
         
         # Create a directory for the phpunit dataroot.
         mkdir -p "$HOME"/roots/behat
@@ -214,6 +217,7 @@ before_script:
           -e "/require_once/i \\\$CFG->behat_enablecompletion = true;"\
           -e "/require_once/i \\\$CFG->behat_enableavailability = true;"\
           -e "/require_once/i \\\$CFG->behat_moodlecourse_enablecompletion = true;"\
+          -e "/require_once/i \\\$CFG->behat_profiles = array('chrome' => array('browser' => 'chrome', 'tags' => '@javascript',));"\
           config.php ;
 
         #Start php build in http server
@@ -293,7 +297,7 @@ script:
     - >
       if [ "$TASK" = 'BEHAT' ];
       then
-        vendor/bin/behat --config /home/travis/roots/behat/behatrun/behat/behat.yml --tags @mod_simplecertificate
+        vendor/bin/behat --config /home/travis/roots/behat/behatrun/behat/behat.yml --tags @mod_simplecertificate @block_simple_cetificate
       fi
 
     - >
