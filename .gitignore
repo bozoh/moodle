@@ -36,3 +36,5 @@ composer.phar
 atlassian-ide-plugin.xml
 /node_modules/
 mod/simplecertificate
+server.log
+.vscode
