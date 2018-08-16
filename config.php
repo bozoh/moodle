@@ -178,9 +178,9 @@ if ($test_type=='phpunit') {
 // Firefox 47
 // docker run --rm --net=host -p 4444:4444 -d selenium/standalone-firefox:2.53.1-beryllium
 // Chrome (default)
-// docker run --rm --net=host -p 4444:4444 -v /dev/shm:/dev/shm -d selenium/standalone-chrome
+// docker run --rm --net=host -p 4444:4444 -d -v /dev/shm:/dev/shm -d selenium/standalone-chrome
 // Firefox marionete
-// docker run --rm --net=host -p 4444:4444 -v /dev/shm:/dev/shm -d selenium/standalone-firefox
+// docker run --rm --net=host -p 4444:4444 -d -v /dev/shm:/dev/shm -d selenium/standalone-firefox
 // init
 //php admin/tool/behat/cli/init.php
 //built in server command:
@@ -319,7 +319,6 @@ if ($test_type=='behat'){
                 'Behat\MinkExtension' => array(
                     'selenium2' => array(
                         'browser'     => 'chrome',
-                        'browserName' => 'chrome',
                         // 'wd_host' => "http://localhost:4444/wd/hub",
                         'capabilities' => array(
                             'chrome' => array(
