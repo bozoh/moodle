@@ -220,9 +220,61 @@ if ($test_type=='behat'){
     $CFG->behat_enablecompletion = true;
     $CFG->behat_enableavailability = true;
     $CFG->behat_moodlecourse_enablecompletion = true;
+
+    // $CFG->behat_profiles = array(
+    //     'default' => array(
+    //         'browser' => 'chrome',
+
+    //         // 'tags' => '@javascript',
+    //         'extensions' => array(
+    //             'Behat\MinkExtension\Extension' => array(
+    //                 'selenium2' => array(
+    //                     'browser'     => 'chrome',
+    //                     'browserName' => 'chrome',
+    //                     'capabilities' => array(
+    //                         'chrome' => array(
+    //                             'switches' => array(
+    //                                 '--headless',
+    //                                 '--no-sandbox',
+    //                                 '--disable-gpu'
+    //                             ),
+    //                         ),
+    //                     ),
+    //                 ),
+    //             ),
+    //         ),
+    //     ),
+    //     'firefox' => array(
+    //         'browser' => 'firefox',
+    //         // 'tags' => '@javascript',
+    //         'extensions' => array(
+    //             'Behat\MinkExtension\Extension' => array(
+    //                 'selenium2' => array(
+    //                     'browser'     => 'firefox',
+    //                     'browserName' => 'firefox',
+    //                 ),
+    //             ),
+    //         ),
+    //     ),
+    //     'firefox-marionette' => array(
+    //         'browser' => 'firefox',
+    //         // 'tags' => '@javascript',
+    //         'extensions' => array(
+    //             'Behat\MinkExtension\Extension' => array(
+    //                 'selenium2' => array(
+    //                     'browser'     => 'firefox',
+    //                     'browserName' => 'firefox',
+    //                     'capabilities' => array(
+    //                         'marionette' => true
+    //                     ),
+    //                 ),
+    //             ),
+    //         ),
+    //     ),
+    //  );
+
     $CFG->behat_profiles = array(
-        'default' => array(
-            'browser' => 'chrome',
+        'chrome' => array(
             // 'tags' => '@javascript',
             'extensions' => array(
                 'Behat\MinkExtension\Extension' => array(
@@ -252,7 +304,6 @@ if ($test_type=='behat'){
                 'Behat\MinkExtension\Extension' => array(
                     'selenium2' => array(
                         'browser'     => 'firefox',
-                        'browserName' => 'firefox',
                         'capabilities' => array(
                             'marionette' => true
                         ),
@@ -261,6 +312,39 @@ if ($test_type=='behat'){
             ),
         ),
      );
+
+    $CFG->behat_config = array_merge(array(
+        'default' => array(
+            'extensions' => array(
+                'Behat\MinkExtension' => array(
+                    'selenium2' => array(
+                        'browser'     => 'chrome',
+                        'browserName' => 'chrome',
+                        // 'wd_host' => "http://localhost:4444/wd/hub",
+                        'capabilities' => array(
+                            'chrome' => array(
+                                'switches' => array(
+                                    '--headless',
+                                    '--no-sandbox',
+                                    '--disable-gpu'
+                                ),
+                            ),
+                            // 'firefox-marionette' => array(
+                            //     'marionette' => true
+                            // ),
+                            // 'browserVersion'    => 'ANY',
+                            'deviceType'        => 'ANY',
+                            'name'              => 'ANY',
+                            'deviceOrientation' => 'ANY',
+                            'ignoreZoomSetting' => 'ANY',
+                            // 'version'           => 'ANY',
+                            'platform'          => 'ANY',
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    ), $CFG->behat_profiles);
 }
 
 //For test backup
