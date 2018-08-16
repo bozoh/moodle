@@ -39,7 +39,7 @@ $CFG = new stdClass();
 // and a username/password created to access it.                         //
 
 $version = '3.4';
-$test_type = 'none'; //'none', 'behat', 'phpunit'
+$test_type = 'behat'; //'none', 'behat', 'phpunit'
 
 $CFG->dbtype    = 'pgsql';      // 'pgsql', 'mariadb', 'mysqli', 'mssql', 'sqlsrv' or 'oci'
 $CFG->dblibrary = 'native';     // 'native' only at the moment
@@ -175,17 +175,26 @@ if ($test_type=='phpunit') {
 //https://docs.moodle.org/dev/Acceptance_testing/Browsers/Working_combinations_of_OS%2BBrowser%2Bselenium
 //java -jar <seleniun>.jar &    
 ///Using docker
-//docker run -d -p4444:4444 selenium/standalone-firefox:2.53.1-beryllium
-//docker run --net=host -d selenium/standalone-firefox:2.53.1-beryllium
+// Firefox 47
+// docker run --rm --net=host -p 4444:4444 -d selenium/standalone-firefox:2.53.1-beryllium
+// Chrome (default)
+// docker run --rm --net=host -p 4444:4444 -v /dev/shm:/dev/shm -d selenium/standalone-chrome
+// Firefox marionete
+// docker run --rm --net=host -p 4444:4444 -v /dev/shm:/dev/shm -d selenium/standalone-firefox
 // init
 //php admin/tool/behat/cli/init.php
 //built in server command:
-//php -S 10.1.100.62:8000 &>/dev/null &
+//php -S localhost:8000 &>server.log &
 //update step definition command:
 //php admin/tool/behat/cli/util.php --enable
-//run behat test with tags
-//vendor/bin/behat --config /path/to/your/behat/dataroot/directory/behat/behat.yml --tags @core_blog
-//vendor/bin/behat --config /opt/moodle/moodle-dev-test_behat/behatrun/behat/behat.yml --tags @mod_simplecertificate --name="Delete selected certificates"
+// run behat test with tags
+// vendor/bin/behat --config /path/to/your/behat/dataroot/directory/behat/behat.yml --tags @core_blog
+// vendor/bin/behat --config /opt/moodle/moodle-dev-test_behat/behatrun/behat/behat.yml --tags="@mod_simplecertificate, @block_simple_certificate" --name="Delete selected certificates"
+// ### FOR FIREFOX (47 or below)
+// vendor/bin/behat --profile='firefox' --config /opt/moodle/moodle-dev-test_behat/behatrun/behat/behat.yml --tags @mod_simplecertificate --name="Delete selected certificates"
+// ### FOR FIREFOX MARIONETTE (above 47)
+// vendor/bin/behat --profile='firefox-marionette' --config /opt/moodle/moodle-dev-test_behat/behatrun/behat/behat.yml --tags @mod_simplecertificate --name="Delete selected certificates"
+
 //vendor/bin/behat -o .. -fmoodle_screenshot --format-settings '{"formats": "image,html"}' --config /opt/moodle/moodle-dev-test_behat/behatrun/behat/behat.yml --tags @mod_simplecertificate
 //######## CODE CHECKER
 // ## to check
@@ -196,8 +205,7 @@ if ($test_type=='phpunit') {
 if ($test_type=='behat'){
     $CFG->behat_dataroot = $CFG->dataroot.'-test_behat';
     $CFG->behat_prefix = 'behat_';
-    $CFG->behat_wwwroot='http://10.1.100.62:8000';
-    #$CFG->behat_wwwroot='http://DECEX-ATI-DES11:8000';
+    $CFG->behat_wwwroot='http://localhost:8000';
     $CFG->behat_debug = (E_ALL | E_STRICT);   // === DEBUG_DEVELOPER - NOT FOR PRODUCTION SERVERS!
     $CFG->behat_debugdisplay = 1;             // NOT FOR PRODUCTION SERVERS!
     $CFG->behat_yuiloglevel = 'debug';
@@ -208,11 +216,137 @@ if ($test_type=='behat'){
     $CFG->behat_showcrondebugging = true;
     $CFG->behat_themedesignermode = true; // NOT FOR PRODUCTION SERVERS!
     $CFG->behat_cachejs = false; // NOT FOR PRODUCTION SERVERS!
-    
+
     $CFG->behat_enablecompletion = true;
     $CFG->behat_enableavailability = true;
     $CFG->behat_moodlecourse_enablecompletion = true;
+
+    // $CFG->behat_profiles = array(
+    //     'default' => array(
+    //         'browser' => 'chrome',
+
+    //         // 'tags' => '@javascript',
+    //         'extensions' => array(
+    //             'Behat\MinkExtension\Extension' => array(
+    //                 'selenium2' => array(
+    //                     'browser'     => 'chrome',
+    //                     'browserName' => 'chrome',
+    //                     'capabilities' => array(
+    //                         'chrome' => array(
+    //                             'switches' => array(
+    //                                 '--headless',
+    //                                 '--no-sandbox',
+    //                                 '--disable-gpu'
+    //                             ),
+    //                         ),
+    //                     ),
+    //                 ),
+    //             ),
+    //         ),
+    //     ),
+    //     'firefox' => array(
+    //         'browser' => 'firefox',
+    //         // 'tags' => '@javascript',
+    //         'extensions' => array(
+    //             'Behat\MinkExtension\Extension' => array(
+    //                 'selenium2' => array(
+    //                     'browser'     => 'firefox',
+    //                     'browserName' => 'firefox',
+    //                 ),
+    //             ),
+    //         ),
+    //     ),
+    //     'firefox-marionette' => array(
+    //         'browser' => 'firefox',
+    //         // 'tags' => '@javascript',
+    //         'extensions' => array(
+    //             'Behat\MinkExtension\Extension' => array(
+    //                 'selenium2' => array(
+    //                     'browser'     => 'firefox',
+    //                     'browserName' => 'firefox',
+    //                     'capabilities' => array(
+    //                         'marionette' => true
+    //                     ),
+    //                 ),
+    //             ),
+    //         ),
+    //     ),
+    //  );
+
+    $CFG->behat_profiles = array(
+        'chrome' => array(
+            // 'tags' => '@javascript',
+            'extensions' => array(
+                'Behat\MinkExtension\Extension' => array(
+                    'selenium2' => array(
+                        'browser'     => 'chrome',
+                        'browserName' => 'chrome',
+                    ),
+                ),
+            ),
+        ),
+        'firefox' => array(
+            'browser' => 'firefox',
+            // 'tags' => '@javascript',
+            'extensions' => array(
+                'Behat\MinkExtension\Extension' => array(
+                    'selenium2' => array(
+                        'browser'     => 'firefox',
+                        'browserName' => 'firefox',
+                    ),
+                ),
+            ),
+        ),
+        'firefox-marionette' => array(
+            'browser' => 'firefox',
+            // 'tags' => '@javascript',
+            'extensions' => array(
+                'Behat\MinkExtension\Extension' => array(
+                    'selenium2' => array(
+                        'browser'     => 'firefox',
+                        'capabilities' => array(
+                            'marionette' => true
+                        ),
+                    ),
+                ),
+            ),
+        ),
+     );
+
+    $CFG->behat_config = array_merge(array(
+        'default' => array(
+            'extensions' => array(
+                'Behat\MinkExtension' => array(
+                    'selenium2' => array(
+                        'browser'     => 'chrome',
+                        'browserName' => 'chrome',
+                        // 'wd_host' => "http://localhost:4444/wd/hub",
+                        'capabilities' => array(
+                            'chrome' => array(
+                                'switches' => array(
+                                    '--headless',
+                                    '--no-sandbox',
+                                    '--disable-gpu'
+                                ),
+                            ),
+                            // 'firefox-marionette' => array(
+                            //     'marionette' => true
+                            // ),
+                            // 'browserVersion'    => 'ANY',
+                            'deviceType'        => 'ANY',
+                            'name'              => 'ANY',
+                            'deviceOrientation' => 'ANY',
+                            'ignoreZoomSetting' => 'ANY',
+                            // 'version'           => 'ANY',
+                            'platform'          => 'ANY',
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    ), $CFG->behat_profiles);
 }
+
 //For test backup
 //$CFG->includeuserpasswordsinbackup = true;
 //$CFG->keeptempdirectoriesonbackup = true;
