@@ -35,8 +35,6 @@ composer.phar
 /lib/yuilib/*/*/*-coverage.js
 atlassian-ide-plugin.xml
 /node_modules/
-blocks/simple_certificate
-mod/simplecertificate
 /local/
 local*
 http_server.log
