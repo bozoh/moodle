@@ -1,0 +1,8 @@
+[submodule "mod/simplecertificate"]
+	path = mod/simplecertificate
+	url = https://github.com/bozoh/moodle-mod_simplecertificate.git
+	branch = MOODLE_33
+[submodule "blocks/simple_certificate"]
+	path = blocks/simple_certificate
+	url = https://github.com/bozoh/moodle-block_simple_certificate.git
+	branch = v.1.0.4
