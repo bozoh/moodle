@@ -234,52 +234,6 @@ before_script:
       fi
 
     - >
-      if [ "$TASK" = 'BEHAT' ];
-      then
-        #Change php.ini to avoid error on php 5.6
-        echo 'always_populate_raw_post_data="-1"' > /tmp/travis-php.ini
-        phpenv config-add /tmp/travis-php.ini
-        #Add simplecertificate
-        git clone -b $PLUGIN_VER --single-branch https://github.com/bozoh/moodle-mod_simplecertificate.git mod/simplecertificate
-        #Add block simplecertificate
-        git clone -b master --single-branch https://github.com/bozoh/moodle-block_simple_certificate.git block/simple_certificate
-        
-        # Create a directory for the phpunit dataroot.
-        mkdir -p "$HOME"/roots/behat
-
-        # The behat dataroot and prefix..
-        sed -i \
-          -e "/require_once/i \\\$CFG->behat_dataroot = '\/home\/travis\/roots\/behat';" \
-          -e "/require_once/i \\\$CFG->behat_prefix = 'behat_';" \
-          -e "/require_once/i \\\$CFG->behat_wwwroot='http://smpl-cert.dev:8000';"\
-          -e "/require_once/i \\\$CFG->behat_debug = (E_ALL | E_STRICT);"\
-          -e "/require_once/i \\\$CFG->behat_debugdisplay = 1;"\
-          -e "/require_once/i \\\$CFG->behat_yuiloglevel = 'debug';"\
-          -e "/require_once/i \\\$CFG->behat_langstringcache = false;"\
-          -e "/require_once/i \\\$CFG->behat_noemailever = true;"\
-          -e "/require_once/i \\\$CFG->behat_showcrondebugging = true;"\
-          -e "/require_once/i \\\$CFG->behat_themedesignermode = true;"\
-          -e "/require_once/i \\\$CFG->behat_cachejs = false;"\
-          -e "/require_once/i \\\$CFG->behat_enablecompletion = true;"\
-          -e "/require_once/i \\\$CFG->behat_enableavailability = true;"\
-          -e "/require_once/i \\\$CFG->behat_moodlecourse_enablecompletion = true;"\
-          -e "/require_once/i \\\$CFG->behat_profiles = array('chrome' => array('browser' => 'chrome', 'tags' => '@javascript',));"\
-          config.php ;
-
-        #Start php build in http server
-        cd $TRAVIS_BUILD_DIR
-        php -S smpl-cert.dev:8000 &> /dev/null &
-        # Initialise Behat for Moodle.        
-        php admin/tool/behat/cli/init.php
-        curl -s http://smpl-cert.dev:8000 &> /dev/null
-        #Enable docker with mozilla.
-        docker run --net=host -d -p4444:4444 selenium/standalone-firefox:2.53.1-beryllium
-        sleep 5
-        php admin/tool/behat/cli/util.php --enable
-        
-      fi
-
-    - >
       if [ "$TASK" = 'GRUNT' ];
       then
         npm install --no-spin;
