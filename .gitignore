@@ -39,3 +39,5 @@ atlassian-ide-plugin.xml
 local*
 http_server.log
 .vscode
+mod/simplecertificate
+blocks/simple_certificate
