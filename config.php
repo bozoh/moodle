@@ -280,7 +280,6 @@ if ($test_type=='behat'){
                 'Behat\MinkExtension\Extension' => array(
                     'selenium2' => array(
                         'browser'     => 'chrome',
-                        'browserName' => 'chrome',
                     ),
                 ),
             ),
@@ -292,7 +291,6 @@ if ($test_type=='behat'){
                 'Behat\MinkExtension\Extension' => array(
                     'selenium2' => array(
                         'browser'     => 'firefox',
-                        'browserName' => 'firefox',
                     ),
                 ),
             ),
@@ -319,7 +317,6 @@ if ($test_type=='behat'){
                 'Behat\MinkExtension' => array(
                     'selenium2' => array(
                         'browser'     => 'chrome',
-                        'browserName' => 'chrome',
                         // 'wd_host' => "http://localhost:4444/wd/hub",
                         'capabilities' => array(
                             'chrome' => array(
